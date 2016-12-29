@@ -9,9 +9,9 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\rbac;
 
-use hdphp\kernel\ServiceProvider;
+use houdunwang\framework\build\Provider;
 
-class RbacProvider extends ServiceProvider {
+class RbacProvider extends Provider {
 	//延迟加载
 	public $defer = true;
 
