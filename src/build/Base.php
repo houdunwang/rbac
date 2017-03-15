@@ -9,6 +9,7 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\rbac\build;
 
+use houdunwang\config\Config;
 use houdunwang\session\Session;
 
 /** RBAC表
@@ -71,12 +72,12 @@ class Base {
 
 	public function __construct( $facade ) {
 		$this->facade          = $facade;
-		$this->user_table      = c( 'database.prefix' ) . c( 'rbac.user_table' );
-		$this->role_table      = c( 'database.prefix' ) . c( 'rbac.role_table' );
-		$this->node_table      = c( 'database.prefix' ) . c( 'rbac.node_table' );
-		$this->user_role_table = c( 'database.prefix' ) . c( 'rbac.user_role_table' );
-		$this->access_table    = c( 'database.prefix' ) . c( 'rbac.access_table' );
-		$this->auth_key        = c( 'rbac.auth_key' );
+		$this->user_table      = Config::get( 'database.prefix' ) . Config::get( 'rbac.user_table' );
+		$this->role_table      = Config::get( 'database.prefix' ) . Config::get( 'rbac.role_table' );
+		$this->node_table      = Config::get( 'database.prefix' ) . Config::get( 'rbac.node_table' );
+		$this->user_role_table = Config::get( 'database.prefix' ) . Config::get( 'rbac.user_role_table' );
+		$this->access_table    = Config::get( 'database.prefix' ) . Config::get( 'rbac.access_table' );
+		$this->auth_key        = Config::get( 'rbac.auth_key' );
 	}
 
 	/**
@@ -177,7 +178,7 @@ class Base {
 	 */
 	public function verify() {
 		//检查不需要验证的动作
-		foreach ( c( 'rbac.no_auth' ) as $noAuth ) {
+		foreach ( Config::get( 'rbac.no_auth' ) as $noAuth ) {
 			if ( strtolower( $noAuth ) == strtolower( APP . '.' . MODULE . '.' . CONTROLLER . '.' . ACTION ) ) {
 				return true;
 			}
@@ -194,7 +195,7 @@ class Base {
 
 		//没有权限节点或时时验证时
 		//都要从数据库中取权限节点信息
-		if ( ! Session::get( '__RBAC__' ) || c( 'rbac.type' ) == 1 ) {
+		if ( ! Session::get( '__RBAC__' ) || Config::get( 'rbac.type' ) == 1 ) {
 			$node = $this->getUserNode( $_SESSION[ $this->auth_key ] );
 			Session::set( '__RBAC__', $node );
 		}
@@ -232,10 +233,10 @@ class Base {
 		if ( Session::get( '__SUPER_USER__' ) ) {
 			return true;
 		}
-		$username = Db::table( c( 'rbac.user_table' ) )
+		$username = Db::table( Config::get( 'rbac.user_table' ) )
 		              ->where( $this->auth_key, Session::get( $this->auth_key ) )
 		              ->pluck( 'username' );
-		if ( $username == c( 'rbac.super_user' ) ) {
+		if ( $username == Config::get( 'rbac.super_user' ) ) {
 			Session::set( '__SUPER_USER__', true );
 
 			return true;
